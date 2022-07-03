@@ -13,7 +13,7 @@ namespace Infrastructure
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDBContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("AppDBContext")));
+                options.UseNpgsql(configuration.GetConnectionString("AppDBContext")).UseSnakeCaseNamingConvention());
 
             services.AddScoped<IReadCSVService, ReadCsvService>();
             services.AddScoped<IEmployeeService, EmployeeService>();

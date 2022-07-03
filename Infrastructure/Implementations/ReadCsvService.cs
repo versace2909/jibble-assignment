@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.Models;
@@ -26,15 +25,26 @@ namespace Infrastructure.Implementations
 
         public async Task<UploadResponse> ReadCSV(IFormFile request)
         {
+            if (!request.FileName.EndsWith(".csv"))
+            {
+                return new UploadResponse
+                {
+                    Status = UploadStatusConstants.Error,
+                    Message = "File format is not supported"
+                };
+            }
+            
             await using var stream = request.OpenReadStream();
             using TextReader sr = new StreamReader(stream);
             using var csvReader = new CsvReader(sr, new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = ","
             });
-            var xx = csvReader.GetRecords<EmployeeDTO>().ToList();
-            var yy = _mapper.Map<List<EmployeeDTO>, List<Employee>>(xx);
-            await _employeeService.AddEmployees(yy);
+
+            var csvEmployees = csvReader.GetRecords<EmployeeDTO>();
+            
+            var employees = _mapper.Map<IEnumerable<Employee>>(csvEmployees);
+            await _employeeService.BulkInsert(employees);
             return new UploadResponse
             {
                 Name = request.FileName,

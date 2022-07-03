@@ -43,18 +43,5 @@ namespace Infrastructure.Database
             
             return base.SaveChangesAsync(cancellationToken);
         }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Employee>()
-                .HasKey(x => x.Id);
-            
-            modelBuilder.Entity<Employee>().Property(x => x.EmpId).HasColumnName("EmpId").HasColumnType("varchar(50)");
-            modelBuilder.Entity<Employee>().Property(x => x.FirstName).HasColumnName("FirstName").HasColumnType("varchar(50)");
-            modelBuilder.Entity<Employee>().Property(x => x.LastName).HasColumnName("LastName").HasColumnType("varchar(50)");
-            modelBuilder.Entity<Employee>().Property(x => x.DoB).HasColumnName("DoB").HasColumnType("timestamp");
-            
-            base.OnModelCreating(modelBuilder);
-        }
     }
 }

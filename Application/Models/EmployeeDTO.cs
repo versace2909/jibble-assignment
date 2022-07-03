@@ -5,6 +5,8 @@ namespace Application.Models
 {
     public class EmployeeDTO
     {
+        [Ignore]
+        public int Id { get; set; }
         [Name("Emp ID")]
         public string EmpId { get; set; }
         [Name("First Name")]

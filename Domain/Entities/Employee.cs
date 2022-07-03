@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
@@ -7,6 +9,7 @@ namespace Domain.Entities
         public string EmpId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateTime DoB { get; set; }
+        [Column(TypeName = "timestamp")]
+        public DateTime DateOfBirth { get; set; }
     }
 }

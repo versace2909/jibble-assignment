@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20220630172435_InitialDatabase")]
+    [Migration("20220703041352_InitialDatabase")]
     partial class InitialDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,40 +25,46 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnName("created_at")
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnName("created_by")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("DoB")
-                        .HasColumnName("DoB")
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnName("date_of_birth")
                         .HasColumnType("timestamp");
 
                     b.Property<string>("EmpId")
-                        .HasColumnName("EmpId")
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnName("FirstName")
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnName("LastName")
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("UpdatedBy")
+                        .HasColumnName("emp_id")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<string>("FirstName")
+                        .HasColumnName("first_name")
+                        .HasColumnType("text");
 
-                    b.ToTable("Employees");
+                    b.Property<string>("LastName")
+                        .HasColumnName("last_name")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnName("updated_by")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id")
+                        .HasName("pk_employees");
+
+                    b.ToTable("employees");
                 });
 #pragma warning restore 612, 618
         }
