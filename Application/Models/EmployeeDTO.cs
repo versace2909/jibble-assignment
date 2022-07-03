@@ -14,6 +14,6 @@ namespace Application.Models
         [Name("Last Name")]
         public string LastName { get; set; }
         [Name("Date of Birth")]
-        public DateTime DoB { get; set; }
+        public DateTime DateOfBirth { get; set; }
     }
 }

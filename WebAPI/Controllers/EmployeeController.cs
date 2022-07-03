@@ -24,11 +24,18 @@ namespace WebAPI.Controllers
             var result = await _readCsvService.ReadCSV(file);
             return new JsonResult(result);
         }
-        
+
         [HttpGet]
         public async Task<JsonResult> GetEmployeesAsync(DataSourceRequest request)
         {
             var result = await _employeeService.GetEmployeesAsync(request);
+            return new JsonResult(result);
+        }
+
+        [HttpPut]
+        public async Task<JsonResult> GetEmployeesAsync([FromBody] EmployeeDTO request)
+        {
+            var result = await _employeeService.UpdateEmployeeAsync(request);
             return new JsonResult(result);
         }
     }

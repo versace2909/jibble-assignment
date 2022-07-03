@@ -24,19 +24,21 @@ namespace Infrastructure.Implementations
             _dbContext = dbContext;
         }
 
-        public async Task<int> AddEmployee(Employee employee)
+        public async Task<GenericResponse<int>> AddEmployeeAsync(Employee employee)
         {
             _dbContext.Employees.Add(employee);
-            return await _dbContext.SaveChangesAsync();
+            var result = await _dbContext.SaveChangesAsync();
+            return GenericResponse<int>.Succeeded(result);
         }
 
-        public async Task<int> AddEmployees(IList<Employee> employee)
+        public async Task<GenericResponse<int>> AddEmployeesAsync(IList<Employee> employee)
         {
             await _dbContext.Employees.AddRangeAsync(employee);
-            return await _dbContext.SaveChangesAsync();
+            var result = await _dbContext.SaveChangesAsync();
+            return GenericResponse<int>.Succeeded(result);
         }
 
-        public async Task<int> UpdateEmployee(EmployeeDTO employee)
+        public async Task<GenericResponse<int>> UpdateEmployeeAsync(EmployeeDTO employee)
         {
             var employeeEnt = await _dbContext.Employees.FirstOrDefaultAsync(x => x.Id == employee.Id);
             if (employee == null)
@@ -44,25 +46,26 @@ namespace Infrastructure.Implementations
                 throw new Exception("Could not find entity");
             }
 
-            employeeEnt.DateOfBirth = employee.DoB;
+            employeeEnt.DateOfBirth = employee.DateOfBirth;
             employeeEnt.EmpId = employee.EmpId;
             employeeEnt.FirstName = employee.FirstName;
             employeeEnt.LastName = employee.LastName;
 
-            return await _dbContext.SaveChangesAsync();
+            var result = await _dbContext.SaveChangesAsync();
+            return GenericResponse<int>.Succeeded(result);
         }
 
-        public async Task BulkInsert(IEnumerable<Employee> employees)
+        public async Task BulkInsertAsync(IEnumerable<Employee> employees)
         {
             await using var npgSql = new NpgsqlConnection(_dbContext.Database.GetDbConnection().ConnectionString);
             npgSql.Open();
             var copyHelper = new PostgreSQLCopyHelper<Employee>("public", "employees")
-                    .MapVarchar("emp_id", x => x.EmpId)
-                    .MapVarchar("first_name", x => x.FirstName)
-                    .MapVarchar("last_name", x => x.LastName)
-                    .MapTimeStamp("date_of_birth", x => x.DateOfBirth)
-                    .MapTimeStamp("created_at", x => x.CreatedAt)
-                    .MapVarchar("created_by", x => x.CreatedBy);
+                .MapVarchar("emp_id", x => x.EmpId)
+                .MapVarchar("first_name", x => x.FirstName)
+                .MapVarchar("last_name", x => x.LastName)
+                .MapTimeStamp("date_of_birth", x => x.DateOfBirth)
+                .MapTimeStamp("created_at", x => x.CreatedAt)
+                .MapVarchar("created_by", x => x.CreatedBy);
 
             await copyHelper.SaveAllAsync(npgSql, employees);
         }
@@ -70,12 +73,15 @@ namespace Infrastructure.Implementations
         public async Task<GenericResponse<EmployeeDTO>> GetEmployeesAsync(DataSourceRequest request)
         {
             var result = await _dbContext.Employees.Select(x => new EmployeeDTO()
-            {
-                EmpId = x.EmpId,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                DoB = x.DateOfBirth
-            }).ToDataSourceResultAsync(request);
+                {
+                    Id = x.Id,
+                    EmpId = x.EmpId,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    DateOfBirth = x.DateOfBirth
+                })
+                .OrderBy(x => x.Id)
+                .ToDataSourceResultAsync(request);
 
             return result;
         }

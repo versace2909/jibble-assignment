@@ -44,7 +44,7 @@ namespace Infrastructure.Implementations
             var csvEmployees = csvReader.GetRecords<EmployeeDTO>();
             
             var employees = _mapper.Map<IEnumerable<Employee>>(csvEmployees);
-            await _employeeService.BulkInsert(employees);
+            await _employeeService.BulkInsertAsync(employees);
             return new UploadResponse
             {
                 Name = request.FileName,
