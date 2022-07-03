@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -9,23 +10,26 @@ namespace WebAPI.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IReadCSVService _readCsvService;
+        private readonly IEmployeeService _employeeService;
 
-        public EmployeeController(IReadCSVService readCsvService)
+        public EmployeeController(IReadCSVService readCsvService, IEmployeeService employeeService)
         {
             _readCsvService = readCsvService;
+            _employeeService = employeeService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadCsv([FromForm]FileUploadRequest model)
+        public async Task<JsonResult> UploadCsv(IFormFile file)
         {
-            var x = await _readCsvService.ReadCSV(model);
-            return Ok("");
+            var result = await _readCsvService.ReadCSV(file);
+            return new JsonResult(result);
         }
         
         [HttpGet]
-        public JsonResult GetEmployee()
+        public async Task<JsonResult> GetEmployeesAsync(DataSourceRequest request)
         {
-            return new JsonResult(new { id = 1, name = "John" });
+            var result = await _employeeService.GetEmployeesAsync(request);
+            return new JsonResult(result);
         }
     }
 }

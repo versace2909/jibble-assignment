@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -10,6 +9,8 @@ using AutoMapper;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Domain.Entities;
+using Infrastructure.Constants;
+using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Implementations
 {
@@ -23,10 +24,9 @@ namespace Infrastructure.Implementations
             _mapper = mapper;
         }
 
-        public async Task<List<EmployeeDTO>> ReadCSV(FileUploadRequest request)
+        public async Task<UploadResponse> ReadCSV(IFormFile request)
         {
-            var dt = new DataTable();
-            await using var stream = request.File.OpenReadStream();
+            await using var stream = request.OpenReadStream();
             using TextReader sr = new StreamReader(stream);
             using var csvReader = new CsvReader(sr, new CsvConfiguration(CultureInfo.InvariantCulture)
             {
@@ -35,7 +35,11 @@ namespace Infrastructure.Implementations
             var xx = csvReader.GetRecords<EmployeeDTO>().ToList();
             var yy = _mapper.Map<List<EmployeeDTO>, List<Employee>>(xx);
             await _employeeService.AddEmployees(yy);
-            return xx;
+            return new UploadResponse
+            {
+                Name = request.FileName,
+                Status = UploadStatusConstants.Done
+            };
         }
     }
 }

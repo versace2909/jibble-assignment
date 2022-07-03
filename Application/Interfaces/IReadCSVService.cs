@@ -1,11 +1,11 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Interfaces
 {
     public interface IReadCSVService
     {
-        Task<List<EmployeeDTO>> ReadCSV(FileUploadRequest request);
+        Task<UploadResponse> ReadCSV(IFormFile request);
     }
 }
